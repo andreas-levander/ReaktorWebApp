@@ -33,6 +33,7 @@
         <p id="profilename"></p>
         <p id="profilematches"></p>
         <p id="profilewinrate"></p>
+        <p id="mostplayed"></p>
         <ul id ="matches"></ul>
     </div>
 
@@ -46,6 +47,7 @@ var profilename;
 var profilematches;
 var profilewinrate;
 var matches;
+var mostplayed;
 
 window.onload = function() {
   
@@ -56,6 +58,7 @@ window.onload = function() {
     profilematches = document.getElementById('profilematches');
     profilewinrate = document.getElementById('profilewinrate');
     matches = document.getElementById('matches');
+    mostplayed = document.getElementById('mostplayed');
 
   
 };
@@ -90,6 +93,7 @@ ws.onmessage = function(event) {
         profilename.innerHTML = json.name;
         profilematches.innerHTML = `Matches played: ${json.matches_played}`;
         profilewinrate.innerHTML = `Winrate: ${json.winrate} %`;
+        mostplayed.innerHTML = `Most played hand: ${json.mostplayed.hand} played ${json.mostplayed.times} times`;
         
         matches.innerHTML = `<h3>Match history</h3>`;
         json.match_history.forEach((match) => {
