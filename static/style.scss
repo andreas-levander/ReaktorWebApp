@@ -1,0 +1,16 @@
+@charset "UTF-8";
+$sm: 5px;
+
+body {
+    background-color: greenyellow;
+  }
+
+h1  {
+    color:aqua;
+}
+
+ul {
+
+    font-size: $sm;
+    color: crimson;
+}

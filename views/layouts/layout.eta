@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  
+  <title>Reaktor WebbApp</title>
+  <link rel="stylesheet" type="text/css" href="/static/style.scss">
+
+  <style>
+    h1 {
+    
+    color: blue;
+    font-family: verdana;
+    font-size: 300%;
+    }
+    ul#messages {
+
+        font-size: 12px;
+        color: crimson;
+        float: right;
+    }
+  </style>
+</head>
+<body>
+    
+    <h1>Reaktor WebbApp</h1>
+    <div id="status">Connecting to the app…</div>
+
+    <ul id="messages"></ul>
+
+    <div id="profile">
+        <p id="profilename"></p>
+        <p id="profilematches"></p>
+        <p id="profilewinrate"></p>
+        <ul id ="matches"></ul>
+    </div>
+
+    <%~ it.body %> 
+</body>
+<script>
+
+var listMsgs;
+var socketStatus;
+var profilename;
+var profilematches;
+var profilewinrate;
+var matches;
+
+window.onload = function() {
+  
+  // get the references of the page elements.
+    listMsgs = document.getElementById('messages');
+    socketStatus = document.getElementById('status');
+    profilename = document.getElementById('profilename');
+    profilematches = document.getElementById('profilematches');
+    profilewinrate = document.getElementById('profilewinrate');
+    matches = document.getElementById('matches');
+
+  
+};
+
+const ws = new WebSocket("ws://localhost:7777/ws");
+
+ws.onopen = function(event) {
+	socketStatus.innerHTML = 'Connected to: websocket';
+	socketStatus.className = 'open';
+};
+
+
+ws.onmessage = function(event) {
+    var msg = event.data;
+    
+    let json = JSON.parse(msg);
+   
+    //let p11link = `<a href="javascript:namelink(${json.playerA.name})" >${json.playerA.name}</a>`;
+
+    if(json.type === "GAME_BEGIN") {
+        let p1link = "<a href='javascript:null' onclick='javascript:namelink(\"" + json.playerA.name + "\");'>" + json.playerA.name + '</a>';
+        let p2link = "<a href='javascript:null' onclick='javascript:namelink(\"" + json.playerB.name + "\");'>" + json.playerB.name + '</a>';
+  
+        listMsgs.innerHTML += `<li class="game_begin">New game started: ${p1link} vs ${p2link}</li>`;
+    } else if(json.type === "GAME_RESULT") {
+        let p1link = "<a href='javascript:null' onclick='javascript:namelink(\"" + json.playerA.name + "\");'>" + json.playerA.name + '</a>';
+        let p2link = "<a href='javascript:null' onclick='javascript:namelink(\"" + json.playerB.name + "\");'>" + json.playerB.name + '</a>';
+  
+        listMsgs.innerHTML += `<li class="game_result">Game result: ${p1link} played ${json.playerA.played} ${p2link} played ${json.playerB.played}</li>`;
+    } else if (json.type === "PROFILE") {
+        //console.log(json);
+        profilename.innerHTML = json.name;
+        profilematches.innerHTML = `Matches played: ${json.matches_played}`;
+        profilewinrate.innerHTML = `Winrate: ${json.winrate} %`;
+        
+        matches.innerHTML = `<h3>Match history</h3>`;
+        json.match_history.forEach((match) => {
+            matches.innerHTML += `<li class ="match_history">Id: ${match.gameid} ${match.ponename} ${match.playera_played} vs ${match.playerb_played} ${match.ptwoname}</li>`;
+        });
+    }
+};
+
+function namelink (name) {
+    ws.send(name);
+    return false;
+};
+
+//setInterval(() => ws.send('pong'), 5000); // just for testing
+
+ws.onclose = function(event) {
+    socketStatus.innerHTML = 'Disconnected from the WebSocket.';
+    socketStatus.className = 'closed';
+};
+
+
+
+</script>
+</html>
