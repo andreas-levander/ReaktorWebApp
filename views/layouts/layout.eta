@@ -15,6 +15,13 @@
 
     <ul id="messages"></ul>
 
+    <ul id="current_games"></ul>
+
+    <form id="profileform">
+        <input type="text" id="formtext">
+        <input type="button" value="Get Profile" onclick="getProfileForm()">
+    </form>
+
     <div id="profile">
         <p id="profilename"></p>
         <p id="profilematches"></p>
@@ -36,6 +43,7 @@ var profilematches;
 var profilewinrate;
 var matches;
 var mostplayed;
+var current_games;
 
 window.onload = function() {
   
@@ -47,6 +55,7 @@ window.onload = function() {
     profilewinrate = document.getElementById('profilewinrate');
     matches = document.getElementById('matches');
     mostplayed = document.getElementById('mostplayed');
+    current_games = document.getElementById('current_games');
 
   
 };
@@ -72,18 +81,31 @@ ws.onmessage = function(event) {
         let p2link = "<a href='javascript:null' onclick='javascript:namelink(\"" + json.playerB.name + "\");'>" + json.playerB.name + '</a>';
   
         listMsgs.innerHTML += `<li class="game_begin">New game started: ${p1link} vs ${p2link}</li>`;
+        current_games.innerHTML += `<li class="live game" id="${json.gameId}">Live game: ${p1link} vs ${p2link}</li>`;
+
     } else if(json.type === "GAME_RESULT") {
         let p1link = "<a href='javascript:null' onclick='javascript:namelink(\"" + json.playerA.name + "\");'>" + json.playerA.name + '</a>';
         let p2link = "<a href='javascript:null' onclick='javascript:namelink(\"" + json.playerB.name + "\");'>" + json.playerB.name + '</a>';
   
         listMsgs.innerHTML += `<li class="game_result">Game result: ${p1link} played ${json.playerA.played} ${p2link} played ${json.playerB.played}</li>`;
 
+        let game_complete = document.getElementById(json.gameId);
+        if(game_complete) 
+            current_games.removeChild(game_complete);
         //update profiledata if we get new data about that profile
         if (json.playerA.name === lastprofilename || json.playerB.name === lastprofilename) {
             namelink(lastprofilename);
         }
     } else if (json.type === "PROFILE") {
         //console.log(json);
+        if(json.name === "NOT FOUND") {
+            profilename.innerHTML = "Profile not found";
+            profilematches.innerHTML = "";
+            profilewinrate.innerHTML = "";
+            mostplayed.innerHTML = "";
+            matches.innerHTML = "";
+            return;
+        }
         profilename.innerHTML = json.name;
         profilematches.innerHTML = `Matches played: ${json.matches_played}`;
         profilewinrate.innerHTML = `Winrate: ${json.winrate} %`;
@@ -108,6 +130,12 @@ function namelink (name) {
     ws.send(json);
     return false;
 };
+
+function getProfileForm() {
+    const name = document.getElementById("formtext");
+    namelink(name.value);
+  return false;
+}
 
 //setInterval(() => ws.send('pong'), 5000); // just for testing
 

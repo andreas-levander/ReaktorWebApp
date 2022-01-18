@@ -1,3 +1,4 @@
+import { send } from "../deps.js";
 import * as dbService from "../services/dbService.js";
 import { sendMessage } from "./websocketController.js";
 
@@ -5,6 +6,11 @@ const requestProfile = async (msg, socket) => {
     const stats = await dbService.getStats(msg);
 
     if (!stats) {
+        const data = {
+            type: "PROFILE",
+            name: "NOT FOUND",
+        }
+        await sendMessage(socket,JSON.stringify(data));
         return;
     }
 
