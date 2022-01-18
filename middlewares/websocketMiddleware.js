@@ -24,7 +24,10 @@ const websocketMiddleware = async (context, next) => {
 
         socket.addEventListener('message', function (event) {
             console.log('Message from client ', event.data);
-            requestProfile(event.data, socket);
+            const jsonmsg = JSON.parse(event.data);
+            if(jsonmsg.type === "REQUEST_PROFILE") {
+              requestProfile(jsonmsg.name, socket);
+            }
         });
         
         //console.table(sockets);

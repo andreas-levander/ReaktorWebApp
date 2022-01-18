@@ -9,20 +9,21 @@ const openSocket = async () => {
 
   ws.on("open", function() {
     console.log("reaktor ws connected!");
-    //ws.send("something");
+    
   });
   ws.on("message", async function (message) {
     //console.log(message.data);
     const json = JSON.parse(message.data);
     //console.log(json);
-    //send new data to all sockets
-    sendToAll(json);
+    
 
     const json2 = JSON.parse(json);
     //if we get new results add em to db
     if(json2.type === "GAME_RESULT") {
       await addToDB(json2);
     }
+    //send new data to all sockets
+    sendToAll(json);
     
   });
 

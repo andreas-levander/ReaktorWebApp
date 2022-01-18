@@ -5,22 +5,8 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   
   <title>Reaktor WebbApp</title>
-  <link rel="stylesheet" type="text/css" href="/static/style.scss">
+  <link rel="stylesheet" type="text/css" href="static/style.css">
 
-  <style>
-    h1 {
-    
-    color: blue;
-    font-family: verdana;
-    font-size: 300%;
-    }
-    ul#messages {
-
-        font-size: 12px;
-        color: crimson;
-        float: right;
-    }
-  </style>
 </head>
 <body>
     
@@ -39,7 +25,9 @@
 
     <%~ it.body %> 
 </body>
+
 <script>
+
 
 var listMsgs;
 var socketStatus;
@@ -70,6 +58,7 @@ ws.onopen = function(event) {
 	socketStatus.className = 'open';
 };
 
+let lastprofilename = "";
 
 ws.onmessage = function(event) {
     var msg = event.data;
@@ -77,7 +66,7 @@ ws.onmessage = function(event) {
     let json = JSON.parse(msg);
    
     //let p11link = `<a href="javascript:namelink(${json.playerA.name})" >${json.playerA.name}</a>`;
-
+    
     if(json.type === "GAME_BEGIN") {
         let p1link = "<a href='javascript:null' onclick='javascript:namelink(\"" + json.playerA.name + "\");'>" + json.playerA.name + '</a>';
         let p2link = "<a href='javascript:null' onclick='javascript:namelink(\"" + json.playerB.name + "\");'>" + json.playerB.name + '</a>';
@@ -88,6 +77,11 @@ ws.onmessage = function(event) {
         let p2link = "<a href='javascript:null' onclick='javascript:namelink(\"" + json.playerB.name + "\");'>" + json.playerB.name + '</a>';
   
         listMsgs.innerHTML += `<li class="game_result">Game result: ${p1link} played ${json.playerA.played} ${p2link} played ${json.playerB.played}</li>`;
+
+        //update profiledata if we get new data about that profile
+        if (json.playerA.name === lastprofilename || json.playerB.name === lastprofilename) {
+            namelink(lastprofilename);
+        }
     } else if (json.type === "PROFILE") {
         //console.log(json);
         profilename.innerHTML = json.name;
@@ -99,11 +93,19 @@ ws.onmessage = function(event) {
         json.match_history.forEach((match) => {
             matches.innerHTML += `<li class ="match_history">Id: ${match.gameid} ${match.ponename} ${match.playera_played} vs ${match.playerb_played} ${match.ptwoname}</li>`;
         });
+        
     }
 };
 
 function namelink (name) {
-    ws.send(name);
+    lastprofilename = name;
+
+    const data = {
+        type: "REQUEST_PROFILE",
+        name: name,
+    }
+    const json = JSON.stringify(data);
+    ws.send(json);
     return false;
 };
 
