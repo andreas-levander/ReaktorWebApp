@@ -1,6 +1,6 @@
-import { StandardWebSocketClient } from "https://deno.land/x/websocket@v0.1.3/mod.ts";
 import { sockets } from "../middlewares/websocketMiddleware.js";
 import { addToDB } from "./apiController.js";
+import { StandardWebSocketClient } from "../deps.js";
 
 const openSocket = async () => {
 

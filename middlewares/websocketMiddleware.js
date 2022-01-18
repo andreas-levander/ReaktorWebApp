@@ -1,5 +1,5 @@
-import { uuid as uuidv4 } from "https://deno.land/x/unique@v1.2.6/uuid.ts"
 import { requestProfile } from "../controllers/profileController.js";
+import { uuidv4 } from "../deps.js";
 
 
 
