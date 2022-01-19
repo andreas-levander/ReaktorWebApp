@@ -116,6 +116,15 @@ ws.onmessage = function(event) {
             matches.innerHTML += `<li class ="match_history">Id: ${match.gameid} ${match.ponename} ${match.playera_played} vs ${match.playerb_played} ${match.ptwoname}</li>`;
         });
         
+    } else if (json.type === "LIVE_DATA") {
+        //console.log(json);
+        json.games.forEach((game) => {
+            let p1link = "<a href='javascript:null' onclick='javascript:namelink(\"" + game.playerA.name + "\");'>" + game.playerA.name + '</a>';
+            let p2link = "<a href='javascript:null' onclick='javascript:namelink(\"" + game.playerB.name + "\");'>" + game.playerB.name + '</a>';
+  
+            current_games.innerHTML += `<li class="live game" id="${game.gameId}">Live game: ${p1link} vs ${p2link}</li>`;
+
+        });
     }
 };
 

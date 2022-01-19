@@ -2,6 +2,8 @@ import { sockets } from "../middlewares/websocketMiddleware.js";
 import { addToDB } from "./apiController.js";
 import { StandardWebSocketClient } from "../deps.js";
 
+const livegames = [];
+
 const openSocket = async () => {
 
   const endpoint = "ws://bad-api-assignment.reaktor.com/rps/live/";
@@ -21,6 +23,16 @@ const openSocket = async () => {
     //if we get new results add em to db
     if(json2.type === "GAME_RESULT") {
       await addToDB(json2);
+
+      //remove from live games
+      for (let i = 0;i<livegames.length;i++) {
+        if(livegames[i].gameId === json2.gameId) {
+          livegames.splice(i,1);
+        }
+      }
+    } else if (json2.type === "GAME_BEGIN") {
+        //add to live games
+        livegames.push(json2);
     }
     //send new data to all sockets
     sendToAll(json);
@@ -28,6 +40,15 @@ const openSocket = async () => {
   });
 
 };
+
+const sendLiveData = async (socket) => {
+  const data = {
+    type: "LIVE_DATA",
+    games: livegames,
+  }
+  const livedata = JSON.stringify(data);
+  sendMessage(socket,livedata);
+}
 
 const sendToAll = async (message) => {
   sockets.forEach((socket) => {
@@ -67,4 +88,4 @@ const sendMessage = async (socket, msg) => {
   }
 }
 
-export {openSocket,sendMessage}
+export {openSocket,sendMessage,livegames,sendLiveData}

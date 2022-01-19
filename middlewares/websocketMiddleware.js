@@ -1,5 +1,6 @@
 import { requestProfile } from "../controllers/profileController.js";
 import { uuidv4 } from "../deps.js";
+import { sendLiveData } from "../controllers/websocketController.js";
 
 
 
@@ -29,8 +30,10 @@ const websocketMiddleware = async (context, next) => {
               requestProfile(jsonmsg.name, socket);
             }
         });
+
+        //send live data
+        await sendLiveData(socket);
         
-        //console.table(sockets);
         
         //remove from sockets when disconnect
         socket.onclose = _ => sockets.delete(socket.id);
@@ -38,5 +41,7 @@ const websocketMiddleware = async (context, next) => {
     
     
   };
+
+
   
   export { websocketMiddleware, sockets };
