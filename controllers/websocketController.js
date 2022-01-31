@@ -1,5 +1,5 @@
 import { sockets } from "../middlewares/websocketMiddleware.js";
-import { addToDB } from "./apiController.js";
+import { addToDB } from "./historyApiController.js";
 import { StandardWebSocketClient } from "../deps.js";
 
 const livegames = [];

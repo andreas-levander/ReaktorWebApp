@@ -1,5 +1,9 @@
 # Reaktor Wepp app
 
+## Two versions of app
+- First with react front end (in folder react-frontend)
+- Another with regular Javascript/HTML (views/layouts/layout.eta)
+
 ## What it does:
 - Gets data from two reaktor endpoints and adds it to a database
 - Automatically updates database from the live websocket api
@@ -9,7 +13,7 @@
 ## How it works:
 - When app starts we establish connection to the reaktor websocket(controllers/websocketController.js)/and fetch history data(services/apiService.js) if it is uncommented(app.js)
 - When a client opens the page we upgrade the connection to a websocket(middlewares/websocketMiddleware.js)
-- When we get data from reaktor websocket we add it to the database(controllers/websocketController.js, apiController.js) and send it to all clients via websocket
+- When we get data from reaktor websocket we add it to the database(controllers/websocketController.js, historyApiController.js) and send it to all clients via websocket
 - The data is then show to the client
 - When a client wants profile data they send a message via websocket and we return the data(controllers/profileController.js) which is then show to the client
 - All database operations is done in (services/dbService.js)
@@ -23,6 +27,8 @@
 2. Put in your database settings in database/database.js and add the tables below
 3. Populate as much history data you want by using/uncommenting fetchReaktorData() in app.js
 4. run app using deno run --allow-all run-locally.js
+5. use react version by npm install and npm start in react-frontend
+6. use js/html version go to http://localhost:7777
 
 ## Tables:
 

@@ -1,4 +1,4 @@
-import { addToDB } from "../controllers/apiController.js";
+import { addToDB } from "../controllers/historyApiController.js";
 import { setfinalurl } from "./dbService.js";
 
 let finalurl = "";
